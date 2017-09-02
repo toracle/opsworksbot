@@ -1,12 +1,10 @@
 programming-language: python3
 intents:
   credentials:
-    - id: access_token
-      question: Please tell me your access token
-      datatype: string
-    - id: secret_access_token
-      question: Please tell me your secret access key
-      datatype: string
-    - id: stack_id
-      question: Please tell me your stack id
-      datatype: string
+    slots:
+      - id: access_token
+        question: Please tell me your access token
+      - id: secret_access_token
+        question: Please tell me your secret access key
+      - id: stack_id
+        question: Please tell me your stack id

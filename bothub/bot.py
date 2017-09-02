@@ -2,6 +2,7 @@
 
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
+import os
 import boto3
 
 from bothub_client.bot import BaseBot
@@ -17,13 +18,9 @@ class Bot(BaseBot):
     def handle_message(self, event, context):
         content = event.get('content')
 
-        intent_slots = [
-            Intent('credentials', 'set_credentials', [
-                Slot('access_token', 'Please tell me your access token', 'string'),
-                Slot('secret_access_token', 'Please tell me your secret access token', 'string'),
-                Slot('stack_id', 'Please tell me your stack_id', 'string')
-            ])
-        ]
+        bot_dir_path = os.path.dirname(os.path.realpath(__file__))
+        yml_path = os.path.join(bot_dir_path, os.pardir, 'bothub.yml')
+        intent_slots = IntentState.load_intent_slots_from_yml(yml_path)
 
         state = IntentState(self, intent_slots)
         dispatcher = DefaultDispatcher(self, state)

@@ -2,6 +2,7 @@
 
 import logging
 import json
+import yaml
 from collections import namedtuple
 
 from bothub.dispatcher import DefaultDispatcher
@@ -28,6 +29,29 @@ class IntentState(object):
     def __init__(self, bot, intent_slots):
         self.bot = bot
         self.intent_id_to_intent_definition = dict([(i.id, i) for i in intent_slots])
+
+    @staticmethod
+    def load_intent_slots_from_yml(path):
+        with open(path) as fin:
+            content = fin.read()
+        config = yaml.load(content)
+
+        intents = config.get('intents', {})
+        intent_slots = []
+        for intent_id in intents.keys():
+            intent_yaml = intents[intent_id]
+            on_complete = intent_yaml.get('on_complete', 'on_{}'.format(intent_id))
+            slots_yaml = intent_yaml.get('slots', [])
+            slot_objs = []
+            for slot in slots_yaml:
+                _id = slot['id']
+                question = slot['question']
+                datatype = slot.get('datatype', 'string')
+                slot_obj = Slot(_id, question, datatype)
+                slot_objs.append(slot_obj)
+            intent = Intent(intent_id, on_complete, slot_objs)
+            intent_slots.append(intent)
+        return intent_slots
 
     def init(self, intent_id):
         logger.debug('IntentState: init %s', intent_id)
