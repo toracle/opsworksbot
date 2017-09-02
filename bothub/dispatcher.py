@@ -3,7 +3,7 @@
 import logging
 logger = logging.getLogger('bothub.dispatcher')
 
-class DefaultDispatcher:
+class DefaultDispatcher(object):
     def __init__(self, bot, state):
         self.bot = bot
         self.state = state
