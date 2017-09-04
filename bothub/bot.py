@@ -7,25 +7,11 @@ import boto3
 
 from bothub_client.bot import BaseBot
 from bothub_client.messages import Message
-
-from bothub.intent import IntentState
-from bothub.intent import Intent
-from bothub.intent import Slot
-from bothub.dispatcher import DefaultDispatcher
+from bothub_client.intent import IntentState
+from bothub_client.dispatcher import DefaultDispatcher
 
 
 class Bot(BaseBot):
-    def handle_message(self, event, context):
-        content = event.get('content')
-
-        bot_dir_path = os.path.dirname(os.path.realpath(__file__))
-        yml_path = os.path.join(bot_dir_path, os.pardir, 'bothub.yml')
-        intent_slots = IntentState.load_intent_slots_from_yml(yml_path)
-
-        state = IntentState(self, intent_slots)
-        dispatcher = DefaultDispatcher(self, state)
-        dispatcher.dispatch(event, context)
-
     def on_default(self, event, context):
         self.send_message('Echo: {}'.format(event['content']))
 
