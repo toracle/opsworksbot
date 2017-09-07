@@ -7,8 +7,6 @@ import boto3
 
 from bothub_client.bot import BaseBot
 from bothub_client.messages import Message
-from bothub_client.intent import IntentState
-from bothub_client.dispatcher import DefaultDispatcher
 
 
 class Bot(BaseBot):
