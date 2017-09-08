@@ -34,7 +34,8 @@ class Bot(BaseBot):
 
         message = Message(event)
         message.set_text('Use stack {} now'.format(stack_name))
-        message.add_postback_button('Show layers', '/layers')
+        message.add_postback_button('Layer list', '/layers')
+        message.add_postback_button('Deploy', '/deploy')
         self.send_message(message)
 
     def on_layers(self, event, context):
@@ -67,6 +68,8 @@ class Bot(BaseBot):
         message_text = '\n'.join(text_lines)
         message = Message(event)
         message.set_text(message_text)
+        message.add_postback_button('Layer list', '/layers')
+        message.add_postback_button('Deploy', '/deploy')
         self.send_message(message)
 
     def on_deploy(self, event, context):
@@ -85,19 +88,24 @@ class Bot(BaseBot):
     def on_deploy_app(self, event, context, app_id):
         message = Message(event)
         message.set_text('Which deploy command do you want to execute?')
-        for command in ['deploy', 'update_custom_cookbook']:
-            message.add_quick_reply(command, '/deploy_app_do_command {} {}'.format(app_id, command))
+        for command_name, command_id in [('deploy', 'deploy'), ('update_custom_cookbooks', 'ucc')]:
+            message.add_quick_reply(command_name, '/deploy_command {} {}'.format(app_id, command_id))
         self.send_message(message)
 
-    def on_deploy_app_do_command(self, event, context, app_id, command):
+    def on_deploy_command(self, event, context, app_id, command_id):
         data = self.get_user_data()
         stack_id = data['stack_id']
         client = self.get_boto_client(data)
 
+        command_id_to_name = {
+            'deploy': 'deploy',
+            'ucc': 'update_custom_cookbooks',
+        }
+
         response = client.create_deployment(
             StackId=stack_id,
             AppId=app_id,
-            Command={'Name': command}
+            Command={'Name': command_id_to_name[command_id]}
         )
 
         message = Message(event)
